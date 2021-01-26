@@ -53,6 +53,8 @@ umount "$MOUNTPOINT"
 
 CFG=$(find "$MOUNTPOINT" -name isolinux.cfg | head -n 1)
 
+[ -f "$CFG" ] || { echo "Could not find isolinux.cfg" >&2; return; }
+
 LINUX=$(cat $CFG | grep "kernel " | head -n 1 | sed -e 's|kernel ||g' | xargs)
 if [[ $LINUX != *"/"* ]] ; then
   LINUX=$(find "$MOUNTPOINT" -name "$LINUX" | head -n 1 | sed -e "s|$MOUNTPOINT||g" ) # Need to get full path

@@ -33,6 +33,8 @@ LIVETOOLVERSION=0
 
 CFG=$(find "$MOUNTPOINT"/loader/entries/archiso-*.conf | head -n 1)
 
+[ -f "$CFG" ] || { echo "Could not find archiso-*.conf" >&2; return; }
+
 LINUX=$(cat $CFG | grep "linux " | head -n 1 | sed -e 's|linux ||g' | xargs)
 echo "* LINUX $LINUX"
 

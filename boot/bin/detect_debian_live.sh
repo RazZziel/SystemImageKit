@@ -55,6 +55,8 @@ if [ -z "$CFG" ] ;  then
   CFG=$(find "$MOUNTPOINT" -name grub.cfg | head -n 1)
 fi
 
+[ -f "$CFG" ] || { echo "Could not find live.cfg or grub.cfg" >&2; return; }
+
 LINUX=$(cat $CFG | grep "linux " | head -n 1 | sed -e 's|linux ||g' | xargs)
 if [ "$LINUX" == "" ] ; then
   LINUX=$(cat $CFG | grep "kernel " | head -n 1 | sed -e 's|kernel ||g' | xargs) # tails-i386-1.5.iso

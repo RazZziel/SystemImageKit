@@ -28,6 +28,8 @@ LIVETOOLVERSION=1
 
 CFG="$MOUNTPOINT"/boot/grub2/grub.cfg
 
+[ -f "$CFG" ] || { echo "Could not find isolinux.cfg" >&2; return; }
+
 LINUX=$(cat $CFG | grep "\$linux" | head -n 1 | sed -e 's|\$linux ||g' | sed -e 's|($root)||g' | xargs)
 echo "* LINUX $LINUX"
 

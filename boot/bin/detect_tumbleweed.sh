@@ -29,6 +29,8 @@ LIVETOOLVERSION=$(ls "$MOUNTPOINT"/*read-only* | rev | cut -d - -f 1 | rev )
 
 CFG="$MOUNTPOINT"/syslinux.cfg
 
+[ -f "$CFG" ] || { echo "Could not find isolinux.cfg" >&2; return; }
+
 LINUX=$(cat $CFG | grep "kernel" | head -n 1 | sed -e 's|kernel ||g' | sed -e 's|($root)||g' | xargs)
 LINUX="/"$LINUX
 echo "* LINUX $LINUX"
