@@ -48,14 +48,14 @@ APPEND=" " # Don't use this because it's already in the LINUX line
 read -r -d '' GRUBENTRY << EOM
 
 menuentry "$ISONAME - $LIVETOOL $LIVETOOLVERSION" --class ubuntu {
-        iso_path="/boot/iso/$ISONAME"
+        iso_path="$ISOPATH"
         search --no-floppy --file \${iso_path} --set
         live_args="for-casper --> iso-scan/filename=\${iso_path} console-setup/layoutcode=$KEYBOARD locale=$LANGUAGE timezone=$TIMEZONE username=$USERNAME hostname=$HOSTNAME noprompt init=/isodevice/boot/customize/init max_loop=256"
         custom_args=""
         iso_args="$APPEND"
-        loopback loop \${iso_path}
+        loopback loop ($ISODRIVE)\${iso_path}
         linux (loop)$LINUX \${live_args} \${custom_args} \${iso_args}
-        initrd (loop)$INITRD /boot/iso/additional-initramfs/initramfs
+        initrd (loop)$INITRD ($INITRAMFSDRIVE)$INITRAMFSPATH
 }
 EOM
 

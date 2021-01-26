@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# LOCALE="en_US.UTF-8" # Format: "en_US.UTF-8"
+# KEYBOARD="de-latin1-nodeadkeys" # does not work for Ubuntu; https://wiki.archlinux.de/title/Arch_Linux_auf_Deutsch_stellen
+# KEYBOARD="en" # Format: "en"
+# TIMEZONE="Europe/Berlin" # Format: "Europe/Berlin"
+# USERNAME="me" # Format: "me"
+# HOSTNAME="host" # Format: "host"
+
+ISOPATH=/mnt/win/dl/os/
+SYSTEMIMAGEKITPATH=/home/raziel/dev/SystemImageKit
+GRUBCFGPATH=/boot/SystemImageKit/grub.cfg
+INITRAMFSPATH=/boot/SystemImageKit/additional-initramfs/initramfs
+
+{
+	$SYSTEMIMAGEKITPATH/boot/bin/detect_resident "$ISOPATH"
+
+	mkdir -p $(basename "$GRUBCFGPATH")
+	mv /tmp/grub.cfg "$GRUBCFGPATH"
+
+	rsync -a "$SYSTEMIMAGEKITPATH/boot/iso/additional-initramfs/" "$(dirname "$INITRAMFSPATH")/"
+	( cd "$(dirname "$INITRAMFSPATH")" && ./generate )
+} >&2
+
+cat <<END
+menuentry "SystemImageKit" {
+        configfile $GRUBCFGPATH
+}
+END

@@ -77,14 +77,14 @@ echo "* APPEND $APPEND"
 read -r -d '' GRUBENTRY << EOM
 
 menuentry "$ISONAME - $LIVETOOL $LIVETOOLVERSION" --class fedora {
-        iso_path="/boot/iso/$ISONAME"
+        iso_path="$ISOPATH"
         search --no-floppy --file \${iso_path} --set
         live_args="for-dracut --> iso-scan/filename=\${iso_path} selinux=0 max_loop=256 rd.live.deltadir=/run/initramfs/isoscan/boot/deltadir rd.live.user=$USERNAME rd.live.host=$HOSTNAME vconsole.keymap=$KEYBOARD locale.LANG=$LOCALE"
         custom_args=""
         iso_args="$APPEND"
-        loopback loop \${iso_path}
+        loopback loop ($ISODRIVE)\${iso_path}
         linux (loop)$LINUX \${live_args} \${custom_args} \${iso_args}
-        initrd (loop)$INITRD /boot/iso/additional-initramfs/initramfs
+        initrd (loop)$INITRD ($INITRAMFSDRIVE)$INITRAMFSPATH
 }
 EOM
 

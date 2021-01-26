@@ -51,14 +51,14 @@ echo "* APPEND $APPEND"
 read -r -d '' GRUBENTRY << EOM
 
 menuentry "$ISONAME - $LIVETOOL $LIVETOOLVERSION" --class arch {
-        iso_path="/boot/iso/$ISONAME"
+        iso_path="$ISOPATH"
         search --no-floppy --file \${iso_path} --set
         live_args="for-arch --> img_loop=\${iso_path} img_dev=/dev/disk/by-uuid/$UUID layout=$KEYBOARD keytable=$KEYBOARD lang=$LOCALE_NODOT max_loop=256"
         custom_args=""
         iso_args="$APPEND"
-        loopback loop \${iso_path}
+        loopback loop ($ISODRIVE)\${iso_path}
         linux (loop)$LINUX \${live_args} \${custom_args} \${iso_args}
-        initrd (loop)$INITRD /boot/iso/additional-initramfs/initramfs
+        initrd (loop)$INITRD ($INITRAMFSDRIVE)$INITRAMFSPATH
 }
 EOM
 

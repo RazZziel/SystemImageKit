@@ -1,0 +1,90 @@
+#!/bin/bash
+
+# LOCALE="en_US.UTF-8" # Format: "en_US.UTF-8"
+# KEYBOARD="de-latin1-nodeadkeys" # does not work for Ubuntu; https://wiki.archlinux.de/title/Arch_Linux_auf_Deutsch_stellen
+# KEYBOARD="en" # Format: "en"
+# TIMEZONE="Europe/Berlin" # Format: "Europe/Berlin"
+# USERNAME="me" # Format: "me"
+# HOSTNAME="host" # Format: "host"
+
+LOCALE=${LOCALE:-$(locale | awk -F= '$1=="LANG" { print $2 }')}
+LOCALE_NODOT=$(echo $LOCALE | cut -d "." -f 1)
+LANGUAGE="$LOCALE_NODOT"
+KEYBOARD=${KEYBOARD:-$(setxkbmap -query | awk '/layout:/ { print $2 }')}
+TIMEZONE=${TIMEZONE:-$(cat /etc/timezone)}
+USERNAME=${USERNAME:-me}
+HOSTNAME=${HOSTNAME:-host}
+
+HERE=$(dirname $(readlink -f $0))
+
+. "$HERE"/detect_loopbackcfg.sh || exit 1
+. "$HERE"/detect_debian_live.sh || exit 1
+. "$HERE"/detect_arch.sh || exit 1
+. "$HERE"/detect_casper.sh || exit 1
+. "$HERE"/detect_dracut.sh || exit 1
+. "$HERE"/detect_lmc.sh || exit 1
+. "$HERE"/detect_tumbleweed.sh || exit 1
+. "$HERE"/detect_mageia.sh || exit 1
+. "$HERE"/detect_kiwi.sh || exit 1
+
+if [[ $EUID -ne 0 ]]; then
+  echo "You must be a root user" 2>&1
+  exit 1
+fi
+
+cat > /tmp/grub.cfg <<EOF
+insmod part_msdos
+menuentry "Go back" {
+        configfile /boot/grub/grub.cfg
+}
+
+EOF
+
+INITRAMFSPATH="/boot/SystemImageKit/additional-initramfs/initramfs"
+INITRAMFSDRIVE=$(grub-probe -t compatibility_hint "$INITRAMFSPATH")
+
+ISOS=$(find "$1" -name "*.iso" | sort)
+
+for ISO in $ISOS; do
+  echo ""
+  echo $ISO
+  unset LIVETOOL
+  unset LIVETOOLVERSION
+  unset LINUX
+  unset INITRD
+  unset APPEND
+  MOUNTPOINT=$(mktemp -d)
+  mount "$ISO" "$MOUNTPOINT" -oloop,ro
+  ISONAME=$(basename "$ISO")
+  ISODRIVE=$(grub-probe -t compatibility_hint "$ISO")
+  ISOPATH=$(grub-mkrelpath "$ISO")
+
+  detect_loopbackcfg "$MOUNTPOINT" >/dev/null
+  detect_debian_live "$MOUNTPOINT" >/dev/null
+  detect_arch "$MOUNTPOINT" >/dev/null
+  detect_casper "$MOUNTPOINT" >/dev/null
+  detect_dracut "$MOUNTPOINT" >/dev/null
+  detect_lmc "$MOUNTPOINT" >/dev/null
+  detect_kiwi "$MOUNTPOINT" >/dev/null
+  detect_mageia "$MOUNTPOINT" >/dev/null
+
+  umount --lazy "$MOUNTPOINT"
+  rmdir "$MOUNTPOINT"
+
+  echo ""
+
+  echo ISONAME="$ISONAME"
+  echo ISODRIVE="$ISODRIVE"
+  echo ISOPATH="$ISOPATH"
+  echo LIVETOOL="$LIVETOOL"
+  echo LIVETOOLVERSION="$LIVETOOLVERSION"
+  echo LINUX="$LINUX"
+  echo INITRD="$INITRD"
+  echo APPEND="$APPEND"
+  # echo "$GRUBENTRY"
+  [[ -z $LIVETOOL || -z $LIVETOOLVERSION || -z $LINUX || -z $INITRD || -z $APPEND || -z $GRUBENTRY ]] && continue
+  ISONAME=$(basename "$ISO")
+  echo "Writing boot entry"
+  echo "$GRUBENTRY" >> /tmp/grub.cfg
+  echo "" >> /tmp/grub.cfg
+done

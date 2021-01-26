@@ -81,14 +81,14 @@ echo "* APPEND $APPEND"
 read -r -d '' GRUBENTRY << EOM
 
 menuentry "$ISONAME - $LIVETOOL $LIVETOOLVERSION" --class debian {
-        iso_path="/boot/iso/$ISONAME"
+        iso_path="$ISOPATH"
         search --no-floppy --file \${iso_path} --set
         live_args="for-debian-live-3 --> findiso=\${iso_path} live-config.keyboard-layouts=$KEYBOARD live-config.locales=$LOCALE live-config.timezone=$TIMEZONE live-config.username=$USERNAME live-config.hostname=$HOSTNAME init=/lib/live/mount/findiso/boot/customize/init max_loop=256"
         custom_args=""
         iso_args="$APPEND"
-        loopback loop \${iso_path}
+        loopback loop ($ISODRIVE)\${iso_path}
         linux (loop)$LINUX \${live_args} \${custom_args} \${iso_args}
-        initrd (loop)$INITRD /boot/iso/additional-initramfs/initramfs
+        initrd (loop)$INITRD ($INITRAMFSDRIVE)$INITRAMFSPATH
 }
 EOM
 

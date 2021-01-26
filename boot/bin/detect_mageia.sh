@@ -54,9 +54,9 @@ menuentry "$ISONAME - $LIVETOOL $LIVETOOLVERSION" --class mageia {
         live_args="for-dracut --> isofrom=/dev/disk/by-uuid/$UUID:\${iso_path} selinux=0 rd.live.deltadir=/run/initramfs/isoscan/boot/deltadir rd.live.user=$USERNAME rd.live.host=$HOSTNAME lang=$KEYBOARD"
         custom_args=""
         iso_args="$APPEND"
-        loopback loop \${iso_path}
+        loopback loop ($ISODRIVE)\${iso_path}
         linux (loop)$LINUX \${live_args} \${custom_args} \${iso_args}
-        initrd (loop)$INITRD /boot/iso/additional-initramfs/initramfs
+        initrd (loop)$INITRD ($INITRAMFSDRIVE)$INITRAMFSPATH
 }
 EOM
 

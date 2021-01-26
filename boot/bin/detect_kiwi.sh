@@ -46,14 +46,14 @@ echo "* APPEND $APPEND" # TODO: Remove extraneous initrd (first argument)
 read -r -d '' GRUBENTRY << EOM
 
 menuentry "$ISONAME - $LIVETOOL $LIVETOOLVERSION" --class opensuse --class os {
-        iso_path="/boot/iso/$ISONAME"
+        iso_path="$ISOPATH"
         search --no-floppy --file \${iso_path} --set
         live_args="for-kiwi --> isofrom_device=/dev/disk/by-uuid/$UUID isofrom_system=\${iso_path} lang=$LOCALE max_loop=256"
         custom_args="init=/isofrom/boot/customize/init"
         iso_args="$APPEND"
-        loopback loop \${iso_path}
+        loopback loop ($ISODRIVE)\${iso_path}
         linux (loop)$LINUX \${live_args} \${custom_args} \${iso_args}
-        initrd (loop)$INITRD /boot/iso/additional-initramfs/initramfs
+        initrd (loop)$INITRD ($INITRAMFSDRIVE)$INITRAMFSPATH
 }
 EOM
 

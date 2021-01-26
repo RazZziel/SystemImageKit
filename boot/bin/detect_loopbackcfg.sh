@@ -34,12 +34,12 @@ APPEND="loopback!"
 read -r -d '' GRUBENTRY << EOM
 
 menuentry "$ISONAME - $LIVETOOL $LIVETOOLVERSION" {
-        iso_path="/boot/iso/$ISONAME"
+        iso_path="$ISOPATH"
         export iso_path
         search --set=root --file \$iso_path
         probe -u -s rootuuid \$root
         export rootuuid
-        loopback loop \$iso_path
+        loopback loop ($ISODRIVE)\$iso_path
         root=(loop)
         configfile /boot/grub/loopback.cfg
         loopback --delete loop
