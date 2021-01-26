@@ -46,7 +46,7 @@ else
   echo "* LIVETOOLVERSION $LIVETOOLVERSION"
 fi
 
-umount "$MOUNTPOINT"
+umount --lazy "$MOUNTPOINT"
 
 CFG=$(find "$MOUNTPOINT" -name live.cfg | head -n 1)
 

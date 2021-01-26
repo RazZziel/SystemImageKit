@@ -36,12 +36,12 @@ if [ -e "$MOUNTPOINT"/LiveOS/rootfs.img ] ; then
     if [ ! -z $LIVETOOLVERSION2 ] ; then
       LIVETOOLVERSION=$LIVETOOLVERSION2
     fi
-  umount "$MOUNTPOINT"
+  umount --lazy "$MOUNTPOINT"
 else
-  umount "$MOUNTPOINT"
+  umount --lazy "$MOUNTPOINT"
   return
 fi
-umount "$MOUNTPOINT"
+umount --lazy "$MOUNTPOINT"
 
 CFG=$(find "$MOUNTPOINT" -name isolinux.cfg | head -n 1)
 

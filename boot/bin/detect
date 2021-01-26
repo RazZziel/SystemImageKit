@@ -73,8 +73,7 @@ for ISO in $ISOS; do
   detect_kiwi "/opt" >/dev/null
   detect_mageia "/opt" >/dev/null
 
-  sleep 0.1
-  umount /opt
+  umount --lazy /opt
 
   echo ""
 

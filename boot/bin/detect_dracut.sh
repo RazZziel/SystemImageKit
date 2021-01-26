@@ -44,12 +44,12 @@ if [ -e "$MOUNTPOINT"/LiveOS/ext3fs.img ] ; then
     LIVETOOLVERSION=$(find "$MOUNTPOINT"/var/lib/yum/yumdb/ -name *dracut-0* | grep -o -e dracut.*$ | sed -e 's|dracut-||g')
     # yumdb is no longer there in Fedora 23
   fi
-  umount "$MOUNTPOINT"
+  umount --lazy "$MOUNTPOINT"
 else
-  umount "$MOUNTPOINT"
+  umount --lazy "$MOUNTPOINT"
   return
 fi
-umount "$MOUNTPOINT"
+umount --lazy "$MOUNTPOINT"
 
 CFG=$(find "$MOUNTPOINT" -name isolinux.cfg | head -n 1)
 
